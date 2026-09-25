@@ -1,0 +1,9 @@
+{
+  "name": "@helios/runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/graceful-shutdown.ts"
+  }
+}

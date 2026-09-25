@@ -1,0 +1,113 @@
+# PAPER production compose. Does not enable LIVE.
+# Usage from repo root:
+#   docker compose -f infrastructure/docker/docker-compose.prod.yml --env-file .env.control-plane up -d postgres redis
+# Gateway is internal-only (expose, no host 3100).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-helios}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-helios}
+      POSTGRES_DB: ${POSTGRES_DB:-helios}
+    volumes:
+      - helios_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-helios} -d ${POSTGRES_DB:-helios}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - helios_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - ../../.env.control-plane
+    environment:
+      TRADING_MODE: PAPER
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  control-gateway:
+    build:
+      context: ../..
+      dockerfile: services/control-gateway/Dockerfile
+    env_file:
+      - ../../.env.trading-runtime
+    environment:
+      TRADING_MODE: PAPER
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "3100"
+    restart: unless-stopped
+
+  pipeline-worker:
+    build:
+      context: ../..
+      dockerfile: workers/pipeline/Dockerfile
+    env_file:
+      - ../../.env.trading-runtime
+    environment:
+      TRADING_MODE: PAPER
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      control-gateway:
+        condition: service_started
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ../nginx/helios.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../../apps/web/dist:/usr/share/nginx/html:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  migrate:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ../../:/app
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-helios}:${POSTGRES_PASSWORD:-helios}@postgres:5432/${POSTGRES_DB:-helios}
+      TRADING_MODE: PAPER
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - migrate
+    command: ["node", "scripts/migrate.mjs"]
+
+volumes:
+  helios_pg_data:
+  helios_redis_data:

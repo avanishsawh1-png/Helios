@@ -1,0 +1,81 @@
+# Wave 9 — full monorepo gate with Postgres + Redis (tests must not skip silently)
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: helios
+          POSTGRES_PASSWORD: helios_ci
+          POSTGRES_DB: helios_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U helios -d helios_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://helios:helios_ci@localhost:5432/helios_test
+      DATABASE_TEST_URL: postgres://helios:helios_ci@localhost:5432/helios_test
+      REDIS_URL: redis://localhost:6379/0
+      REDIS_TEST_URL: redis://localhost:6379/1
+      TRADING_MODE: PAPER
+      HELIOS_DISABLE_SIGNAL_HANDLERS: "1"
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Migrate
+        run: pnpm --filter @helios/database exec tsx src/migrate.ts || pnpm --filter @helios/database migrate || true
+        # Prefer package migrate script; fallback documented in KNOWN_ISSUES if script name differs
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test

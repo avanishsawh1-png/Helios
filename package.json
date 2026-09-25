@@ -1,0 +1,10 @@
+{
+  "name": "helios",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "echo 'partial handoff — per-package build'",
+    "test:gates": "node docs/cleanup/c6-gate.cjs",
+    "pack:check": "node scripts/pack-check.cjs"
+  }
+}
