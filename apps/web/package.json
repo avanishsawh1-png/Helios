@@ -1,0 +1,18 @@
+{
+  "name": "@helios/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "mkdir -p dist && cp src/index.html dist/index.html",
+    "start": "echo 'static — served by nginx'"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.1",
+    "vitest": "^2.1.4"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@helios/discovery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/discover-mints.ts"
+  },
+  "dependencies": {
+    "@helios/solana": "workspace:*"
+  }
+}

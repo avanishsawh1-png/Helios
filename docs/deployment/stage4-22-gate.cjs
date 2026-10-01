@@ -1,0 +1,11 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "../..");
+const ready = fs.readFileSync(path.join(root, "PRODUCTION_READINESS.md"), "utf8");
+assert.match(ready, /paperModePass: false/);
+assert.match(ready, /manualAdminApproval: null/);
+assert.match(ready, /liveModeEnabled: false/);
+assert.match(ready, /productionReady: false/);
+assert.match(ready, /Stage 4 §22/);
+console.log("Stage 4 §22 readiness revisit: PASS flags_unchanged");

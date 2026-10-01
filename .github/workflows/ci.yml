@@ -1,0 +1,39 @@
+# CI
+
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TRADING_MODE: PAPER
+      NODE_ENV: test
+      HELIOS_DISABLE_SIGNAL_HANDLERS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Pack + Section 70 closed
+        run: |
+          node scripts/pack-check.cjs
+          node docs/deployment/blockers-gate.cjs
+          node services/execution/src/live-engine-gate.cjs
+      - name: Unit gates
+        run: node docs/cleanup/c6-gate.cjs
+      - name: Discovery + pipeline
+        run: |
+          node services/discovery/src/discovery-gate.cjs
+          node workers/pipeline/src/leftover-e2e.cjs
+      - name: Password guard
+        run: node packages/database/src/password-guard-gate.cjs

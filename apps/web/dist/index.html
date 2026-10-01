@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Helios PAPER</title>
+    <style>
+      body { font-family: sans-serif; background: #0b1020; color: #e8eefc; margin: 2rem; }
+      .tile { display: inline-block; margin: 0.5rem 1rem 0.5rem 0; }
+      .label { color: #8aa; font-size: 0.8rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Helios dashboard</h1>
+    <p>PAPER mode. This page cannot open Section 70 or broadcast.</p>
+    <div id="out">Loading balances…</div>
+    <script>
+      fetch("/v1/balances").then((r) => r.json()).then((j) => {
+        const d = j.data || {};
+        document.getElementById("out").innerHTML =
+          "<div class=tile><div class=label>Paper SOL</div>" + (d.paper && d.paper.sol) + "</div>" +
+          "<div class=tile><div class=label>Live SOL</div>" + (d.live && d.live.sol) + "</div>" +
+          "<div class=tile><div class=label>Live trading</div>" + (d.liveTradingEnabled) + "</div>";
+      }).catch((e) => { document.getElementById("out").textContent = String(e); });
+    </script>
+  </body>
+</html>

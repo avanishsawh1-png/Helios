@@ -1,0 +1,12 @@
+{
+  "name": "@helios/solana",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.8"
+  }
+}

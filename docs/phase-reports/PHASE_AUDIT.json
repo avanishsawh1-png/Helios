@@ -1,0 +1,183 @@
+{
+  "mode": "PAPER",
+  "live": false,
+  "gates": {
+    "n": 24,
+    "failed": 0,
+    "rows": [
+      {
+        "name": "E5 exits",
+        "rel": "services/exits/src/e5-gate.cjs",
+        "ok": true,
+        "tail": "E5 LIVE authorization: NOT GRANTED | E1+E2+E3+E4+E5 unit checks: PASS"
+      },
+      {
+        "name": "O1 shutdown",
+        "rel": "packages/runtime/src/o1-gate.cjs",
+        "ok": true,
+        "tail": "O1 process lifecycle unit checks: PASS"
+      },
+      {
+        "name": "O2 rpc",
+        "rel": "packages/solana/src/o2-gate.cjs",
+        "ok": true,
+        "tail": "O2 outbound RPC 429 policy unit checks: PASS"
+      },
+      {
+        "name": "O3 supervisor",
+        "rel": "packages/runtime/src/o3-gate.cjs",
+        "ok": true,
+        "tail": "O3 supervisor + single-instance unit checks: PASS"
+      },
+      {
+        "name": "O4 bounds",
+        "rel": "packages/runtime/src/o4-gate.cjs",
+        "ok": true,
+        "tail": "O4 resource bounds + WS reconnect unit checks: PASS"
+      },
+      {
+        "name": "O5 soak evidence",
+        "rel": "packages/runtime/src/o5-gate.cjs",
+        "ok": true,
+        "tail": "O5 LIVE authorization: NOT GRANTED | O5 unit checks: PASS"
+      },
+      {
+        "name": "W8-32 agents",
+        "rel": "docs/cleanup/c6-gate.cjs",
+        "ok": true,
+        "tail": "PASS services/discovery/src/discovery-gate.cjs | Wave C6 full gate regression: PASS n=39"
+      },
+      {
+        "name": "Stage1 deploy",
+        "rel": "docs/deployment/stage1-gate.cjs",
+        "ok": true,
+        "tail": "Stage 1 deploy artifacts unit checks: PASS paper_only gateway_unpublished"
+      },
+      {
+        "name": "Stage3-14",
+        "rel": "packages/agents/src/stage3-14-gate.cjs",
+        "ok": true,
+        "tail": "Stage 3 §14 run instrumentation unit checks: PASS"
+      },
+      {
+        "name": "Stage3-15",
+        "rel": "packages/agents/src/stage3-15-gate.cjs",
+        "ok": true,
+        "tail": "Stage 3 §15 outcome link unit checks: PASS"
+      },
+      {
+        "name": "Stage3-16",
+        "rel": "packages/agents/src/stage3-16-gate.cjs",
+        "ok": true,
+        "tail": "Stage 3 §16 policy eval unit checks: PASS"
+      },
+      {
+        "name": "Stage4-17",
+        "rel": "packages/agents/src/stage4-17-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §17 policy versions unit checks: PASS"
+      },
+      {
+        "name": "Stage4-18",
+        "rel": "packages/agents/src/stage4-18-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §18 proposal unit checks: PASS"
+      },
+      {
+        "name": "Stage4-19",
+        "rel": "packages/agents/src/stage4-19-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §19 policy shadow unit checks: PASS"
+      },
+      {
+        "name": "Stage4-20",
+        "rel": "packages/agents/src/stage4-20-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §20 policy promotion unit checks: PASS"
+      },
+      {
+        "name": "Stage4-21",
+        "rel": "packages/agents/src/stage4-21-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §21 policy metrics unit checks: PASS"
+      },
+      {
+        "name": "Stage4-22",
+        "rel": "docs/deployment/stage4-22-gate.cjs",
+        "ok": true,
+        "tail": "Stage 4 §22 readiness revisit: PASS flags_unchanged"
+      },
+      {
+        "name": "W33",
+        "rel": "packages/agents/src/wave33-gate.cjs",
+        "ok": true,
+        "tail": "Wave 33 leniency scorecard: PASS n=8 unsafe_trading=0 unsafe_auth=0 | Wave 33 LIVE authorization: NOT GRANTED"
+      },
+      {
+        "name": "W34",
+        "rel": "packages/agents/src/wave34-gate.cjs",
+        "ok": true,
+        "tail": "Wave 34 interference check: PASS hooks_fail_open trading_unchanged | Wave 34 LIVE authorization: NOT GRANTED"
+      },
+      {
+        "name": "W35",
+        "rel": "docs/phase-reports/wave35-gate.cjs",
+        "ok": true,
+        "tail": "Wave 35 LIVE authorization: NOT GRANTED | Wave 35 STOP: human decision only from this point"
+      },
+      {
+        "name": "S70 checklist",
+        "rel": "docs/runbooks/checklist-gate.cjs",
+        "ok": true,
+        "tail": "Read-only LIVE checklist gate: PASS no_flags_no_signer"
+      },
+      {
+        "name": "Live engine closed",
+        "rel": "services/execution/src/live-engine-gate.cjs",
+        "ok": true,
+        "tail": "Live engine gate-closed unit checks: PASS submitted=false flags_unread_from_env"
+      },
+      {
+        "name": "Discovery",
+        "rel": "services/discovery/src/discovery-gate.cjs",
+        "ok": true,
+        "tail": "Discovery pumpfun + metadata wiring: PASS parse_ok live_source=unavailable n=0"
+      },
+      {
+        "name": "Pack",
+        "rel": "scripts/pack-check.cjs",
+        "ok": true,
+        "tail": "Monorepo pack check: PASS packages=16 workspace_ok deps_declared"
+      }
+    ]
+  },
+  "chain": {
+    "rpc": "https://api.mainnet-beta.solana.com",
+    "health": {
+      "availability": "UNAVAILABLE",
+      "value": {
+        "code": 429,
+        "message": "Connection rate limits exceeded"
+      }
+    },
+    "slot": {
+      "availability": "UNAVAILABLE",
+      "value": {
+        "code": 429,
+        "message": "Connection rate limits exceeded"
+      }
+    },
+    "universe": {
+      "source": "unavailable",
+      "mints": [],
+      "availability": "UNAVAILABLE",
+      "reason": "pumpfun signatures unavailable"
+    }
+  },
+  "blockers": [
+    "Section 70 all open",
+    "Hostinger compose not running here",
+    "No Jupiter key / no paper fill",
+    "PRODUCTION_READINESS.md checks packages not in this partial tree"
+  ]
+}
