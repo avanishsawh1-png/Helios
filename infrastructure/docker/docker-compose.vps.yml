@@ -1,0 +1,122 @@
+# Wave 9 — VPS trading-runtime stack (PAPER by default).
+# api/web use .env.control-plane — never mount .env.vps into control-plane containers.
+# Usage:
+#   docker compose -f infrastructure/docker/docker-compose.vps.yml --env-file .env.vps up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-helios}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-helios}
+      POSTGRES_DB: ${POSTGRES_DB:-helios}
+    ports:
+      - "5432:5432"
+    volumes:
+      - helios_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-helios} -d ${POSTGRES_DB:-helios}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - helios_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  control-gateway:
+    image: helios-control-gateway:local
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/dockerfiles/node-service.Dockerfile
+      args:
+        PACKAGE: "@helios/services-control-gateway"
+    env_file:
+      - ../../.env.vps
+    environment:
+      TRADING_MODE: PAPER
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3100:3100"
+    profiles:
+      - runtime
+
+  pipeline:
+    image: helios-pipeline:local
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/dockerfiles/node-service.Dockerfile
+      args:
+        PACKAGE: "@helios/worker-pipeline"
+    env_file:
+      - ../../.env.vps
+    environment:
+      TRADING_MODE: PAPER
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - runtime
+
+  # Control-plane on Hostinger — loads .env.control-plane only
+  api:
+    image: helios-api:local
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/dockerfiles/node-service.Dockerfile
+      args:
+        PACKAGE: "@helios/api"
+    env_file:
+      - ../../.env.control-plane
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    profiles:
+      - control-plane
+
+  web:
+    image: helios-web:local
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/dockerfiles/node-service.Dockerfile
+      args:
+        PACKAGE: "@helios/web"
+    env_file:
+      - ../../.env.control-plane
+    ports:
+      - "5173:5173"
+    profiles:
+      - control-plane
+
+  migrate:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ../../:/app
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-helios}:${POSTGRES_PASSWORD:-helios}@postgres:5432/${POSTGRES_DB:-helios}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - migrate
+    command: ["echo", "Run migrations via: pnpm --filter @helios/database migrate"]
+
+volumes:
+  helios_pg_data:
+  helios_redis_data:

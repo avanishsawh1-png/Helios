@@ -1,0 +1,2 @@
+-- Do not use change_me / helios / helios_ci outside NODE_ENV=development|test.
+-- Production boot calls assertDatabasePasswordRotated().

@@ -1,0 +1,7 @@
+{
+  "name": "@helios/monitoring",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/health.ts" }
+}
