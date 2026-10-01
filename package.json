@@ -1,0 +1,19 @@
+{
+  "name": "helios",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "pack:check": "node scripts/pack-check.cjs",
+    "test:hygiene": "node scripts/gate-import-hygiene.cjs",
+    "test:gates": "node docs/cleanup/c6-gate.cjs",
+    "test:pipeline": "node workers/pipeline/src/leftover-e2e.cjs",
+    "test:live-gate": "node services/execution/src/live-engine-gate.cjs",
+    "test": "node scripts/ci-local.cjs",
+    "ci": "node scripts/ci-local.cjs",
+    "typecheck": "node scripts/typecheck-status.cjs",
+    "build": "node scripts/build-status.cjs"
+  }
+}

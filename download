@@ -1,0 +1,10 @@
+.env.control-plane
+.env.trading-runtime
+.env.vps
+.env
+.env.secrets.enc
+*.pem
+id_ed25519
+wallet.json
+secrets.json
+
