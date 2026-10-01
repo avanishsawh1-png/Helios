@@ -5,4 +5,5 @@ export interface SolanaProvider {
 export * from "./bounded-caller.js";
 export * from "./outbound-budget.js";
 export * from "./rpc-backoff.js";
-export * from "./rpc-errors.js";
+export * from "./metadata/find-metadata-pda.js";
+

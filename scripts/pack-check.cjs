@@ -17,10 +17,15 @@ const expected = [
   ["packages/runtime", "@helios/runtime"],
   ["packages/shared", "@helios/shared"],
   ["packages/solana", "@helios/solana"],
+  ["packages/config", "@helios/config"],
+  ["packages/wallet", "@helios/wallet"],
+  ["packages/secrets", "@helios/secrets"],
   ["services/control-gateway", "@helios/services-control-gateway"],
+  ["services/discovery", "@helios/discovery"],
   ["services/execution", "@helios/execution"],
   ["services/exits", "@helios/exits"],
   ["services/migration", "@helios/migration"],
+  ["services/monitoring", "@helios/monitoring"],
   ["services/quote", "@helios/quote"],
   ["services/smart-money", "@helios/smart-money"],
   ["services/transaction-simulator", "@helios/transaction-simulator"],
@@ -35,16 +40,14 @@ for (const [rel, name] of expected) {
   assert.equal(json.name, name, rel);
   names.push(name);
 }
-assert.equal(names.length, 15);
-assert.equal(new Set(names).size, 15, "duplicate package names");
+assert.equal(names.length, 20);
+assert.equal(new Set(names).size, 20, "duplicate package names");
 
 const notInHandoff = [
   "services/risk",
-  "services/discovery",
   "services/scoring",
   "services/signal",
   "services/position",
-  "services/monitoring",
 ];
 for (const rel of notInHandoff) {
   assert.equal(fs.existsSync(path.join(root, rel)), false);
@@ -65,8 +68,9 @@ assert.ok(db.dependencies.pg);
 const web = JSON.parse(fs.readFileSync(path.join(root, "apps/web/package.json"), "utf8"));
 assert.ok(web.dependencies.react);
 
-assert.equal(fs.existsSync(path.join(root, "packages/solana/src/index.ts")), true);
-assert.equal(fs.existsSync(path.join(root, "packages/database/src/index.ts")), true);
+assert.equal(fs.existsSync(path.join(root, "packages/solana/src/metadata/find-metadata-pda.ts")), true);
+assert.equal(fs.existsSync(path.join(root, "services/discovery/src/sources/pumpfun-parse.ts")), true);
+
 
 console.log(`Monorepo pack check: PASS packages=${names.length} workspace_ok deps_declared`);
 

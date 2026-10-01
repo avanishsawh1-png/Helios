@@ -1,0 +1,14 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "../..");
+assert.equal(fs.existsSync(path.join(root, "packages/config/src/env.ts")), true);
+assert.equal(fs.existsSync(path.join(root, "packages/wallet/src/paper-wallet.ts")), true);
+assert.equal(fs.existsSync(path.join(root, "services/monitoring/src/health.ts")), true);
+assert.equal(fs.existsSync(path.join(root, "packages/solana/src/rpc-pool.mjs")), true);
+assert.equal(fs.existsSync(path.join(root, "services/quote/src/jupiter-fetch.mjs")), true);
+const ready = fs.readFileSync(path.join(root, "PRODUCTION_READINESS.md"), "utf8");
+assert.match(ready, /\[ \] PAPER MODE PASS/);
+assert.match(ready, /\[ \] LIVE MODE/);
+assert.match(ready, /manualAdminApproval: null/);
+console.log("Blocker wiring unit checks: PASS s70_still_open");

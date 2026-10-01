@@ -1,5 +1,6 @@
 import http from "node:http";
-import { validateGatewayCommand } from "./commands.mjs";
+import { dispatchGatewayCommand } from "./commands.mjs";
+import { snapshot } from "./control-state.mjs";
 
 const mode = process.env.TRADING_MODE ?? "PAPER";
 const port = Number(process.env.PORT ?? 3100);
@@ -26,12 +27,16 @@ http
         send(res, 400, { ok: false, reason: "invalid_json" });
         return;
       }
-      const result = validateGatewayCommand({
+      const result = dispatchGatewayCommand({
         ...body,
         mode,
         apiKey: req.headers["x-api-key"] ?? body.apiKey,
       });
       send(res, result.status, result);
+      return;
+    }
+    if (url.pathname === "/v1/control") {
+      send(res, 200, { ok: true, state: snapshot(), live: false });
       return;
     }
     send(res, 404, { error: "not_found" });

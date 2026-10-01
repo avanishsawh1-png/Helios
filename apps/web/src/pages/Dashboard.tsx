@@ -19,6 +19,7 @@ import type {
   PortfolioSummary,
   ProductionReadinessView,
   RiskStateView,
+  SolBalancesView,
 } from "../api/client.js";
 
 const FIXTURE_MODE = import.meta.env.VITE_HELIOS_DESIGN_PREVIEW === "1";
@@ -26,14 +27,13 @@ const FIXTURE_MODE = import.meta.env.VITE_HELIOS_DESIGN_PREVIEW === "1";
 export function DashboardPage() {
   const { client } = useAuth();
 
-  const statusState = usePolledAvailability<ControlPlaneStatus>(() =>
-    client.status().then(normalizeStatus),
-  );
+  const statusState = usePolledAvailability<ControlPlaneStatus>(() => client.status());
   const portfolioState = usePolledAvailability<PortfolioSummary>(() => client.portfolio());
   const riskState = usePolledAvailability<RiskStateView>(() => client.riskState());
   const funnelState = usePolledAvailability<PipelineFunnelView>(() => client.pipelineFunnel());
   const seriesState = usePolledAvailability<PortfolioSeriesView>(() => client.portfolioSeries());
   const readinessState = usePolledAvailability<ProductionReadinessView>(() => client.readiness());
+  const balancesState = usePolledAvailability<SolBalancesView>(() => client.balances());
 
   return (
     <div>
@@ -70,6 +70,22 @@ export function DashboardPage() {
                 <MetricTile label="API" value={status.apiVersion} />
               </div>
             </>
+          )}
+        </DataState>
+      </PanelCard>
+
+      <PanelCard title="SOL balances (read-only RPC)">
+        <DataState state={balancesState} loadingLabel="Loading balances…">
+          {(b) => (
+            <div className="metric-grid">
+              <MetricTile label="Paper pubkey" value={b.paper.pubkey} />
+              <MetricTile label="Paper SOL" value={b.paper.sol} />
+              <MetricTile label="Paper status" value={b.paper.availability} />
+              <MetricTile label="Live pubkey" value={b.live.pubkey} />
+              <MetricTile label="Live SOL" value={b.live.sol} />
+              <MetricTile label="Live status" value={b.live.availability} />
+              <MetricTile label="Live trading" value={b.liveTradingEnabled ? "on" : "off"} />
+            </div>
           )}
         </DataState>
       </PanelCard>
@@ -157,21 +173,3 @@ export function DashboardPage() {
   );
 }
 
-async function normalizeStatus(
-  res: Awaited<ReturnType<import("../api/client.js").HeliosApiClient["status"]>>,
-): Promise<
-  | { ok: true; data: import("../api/client.js").DataReadResponse<ControlPlaneStatus> }
-  | { ok: false; error: { error: { message: string } } }
-> {
-  if (!res.ok) return res;
-  return {
-    ok: true,
-    data: {
-      availability: "OK",
-      status: "OK",
-      data: res.data,
-      asOf: res.data.generatedAt,
-      correlationId: "status",
-    },
-  };
-}

@@ -9,7 +9,7 @@ function isGateFile(relPath) {
     /\.test\.(t|j)sx?$/.test(base) ||
     /\/__tests__\//.test(base) ||
     /(?:^|\/)(?:paper-e2e|leftover-e2e|worker|migrate)\.mjs$/.test(base) ||
-    /(?:^|\/)(?:gap-gate|leftover-e2e|live-engine-gate)\.cjs$/.test(base) ||
+    /(?:^|\/)(?:gap-gate|leftover-e2e|live-engine-gate|discovery-gate|phase-audit|blockers-gate|auth-gate|password-guard-gate|gate-import-hygiene|s1-gate|s2-gate|s3-gate|s4-gate|s5-gate|s6-gate|s7-gate|s8-gate|s9-gate|s10-gate|secrets-gate|sol-balance-gate|w-audit-gate)\.cjs$/.test(base) ||
     /(?:^|\/)scripts\//.test(base) ||
     /\/dist\//.test(base)
   );

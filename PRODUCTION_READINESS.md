@@ -34,6 +34,11 @@ item below is independently verified. Status as of **Phase R12**:
 
 **Overall: NOT PRODUCTION READY**
 
+This zip now includes library stubs for `packages/config`, `packages/wallet` (pubkey only), and `services/monitoring`.
+That does **not** verify wallet, backups, or Section 70.
+Hostinger compose exists; soak script writes `INSUFFICIENT_SAMPLE` until n≥20 on a real VPS.
+RPC pool fails over on 429. Put a paid RPC in `SOLANA_RPC_PRIMARY` on Hostinger.
+
 R12 added deployment *templates* (env examples, VPS compose, metrics/logger).
 Templates are not verification. Unchecked items remain unchecked.
 

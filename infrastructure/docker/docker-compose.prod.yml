@@ -82,6 +82,20 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  signer:
+    build:
+      context: ../..
+      dockerfile: workers/signer/Dockerfile
+    env_file:
+      - ../../.env.trading-runtime
+    environment:
+      TRADING_MODE: PAPER
+      HELIOS_SIGNER_ENABLE: "0"
+    # Internal only — no host ports
+    expose:
+      - "3200"
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     volumes:

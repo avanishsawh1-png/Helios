@@ -14,6 +14,7 @@ This zip is a **partial** Helios workspace. Packed packages all have `package.js
 | packages/shared | @helios/shared |
 | packages/solana | @helios/solana |
 | services/control-gateway | @helios/services-control-gateway |
+| services/discovery | @helios/discovery |
 | services/execution | @helios/execution |
 | services/exits | @helios/exits |
 | services/migration | @helios/migration |
@@ -24,7 +25,7 @@ This zip is a **partial** Helios workspace. Packed packages all have `package.js
 
 ## Not in this handoff (do not invent)
 
-risk, discovery, scoring, signal, position, monitoring, config package, wallet module.
+risk, scoring, signal, position, monitoring, config package, wallet module.
 
 ## Declared dependencies
 

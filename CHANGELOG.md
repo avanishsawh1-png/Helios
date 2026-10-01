@@ -1,6 +1,140 @@
 # CHANGELOG.md
 
+## Dashboard/API wiring scan (2026-09-26)
+
+- Public GET funnel/positions/portfolio/risk/series/balances
+- Status fields match dashboard (reportedMode/health)
+- Readiness includes `liveTradingGate` wrapper
+- Equity USD stays null (not invented)
+
+## Live adapter + engine (2026-09-26)
+
+
+- `LiveChainAdapter` quote/build/simulate/send (send refused)
+- `LiveExecutionEngine` uses IsolatedSigner + Section 70
+- Pipeline + `POST /v1/live/preview` call the real engine
+- live-engine-gate imports shipped modules
+
+## SOL balances on dashboard (2026-09-26)
+
+
+- `GET /v1/balances` paper + live pubkeys via `getBalance`
+- Dashboard tiles; `liveTradingEnabled` stays false
+
+## S10 Section 70 human-only (2026-09-26)
+
+
+- Checklist + gate assert every S70 box still false/null
+- Agent does not set flags
+
+## S9 Soak (2026-09-26)
+
+
+- `classifySoak`: n<20 → INSUFFICIENT_SAMPLE; live submit → UNAVAILABLE
+- Report always `paperModePass: false`
+
+## S8 Hostinger compose (2026-09-26)
+
+
+- Signer service internal-only; `HELIOS_SIGNER_ENABLE=0`
+- `docs/deployment/HOSTINGER.md` PAPER compose steps
+
+## S7 Confirm/recon (2026-09-26)
+
+
+- Paper confirm only; unexpected signature rejected
+- Chain reconcile blocked while Section 70 closed
+- Recovery fails on live_submitted rows
+
+## S6 Isolated signer (2026-09-26)
+
+
+- `workers/signer` refuses by default; `/v1/wallet` exposes pubkey only
+- API does not load WALLET_PRIVATE_KEY
+
+## S5 Positions/exits (2026-09-26)
+
+
+- Pipeline uses `services/exits/src/exit-engine.mjs` (SL/BE/TP/trail/time/kill)
+- UNAVAILABLE mark → no price exit; legs persisted on the position
+
+## S4 Quote/build/sim (2026-09-26)
+
+
+- Jupiter quote/swap retry on 429/5xx (3 attempts)
+- 8s abort; still no swap without PAPER_WALLET_PUBKEY
+- `scripts/run-step-gates.cjs` runs S1–S4 + e2e
+
+## S3 Postgres state (2026-09-26)
+
+
+- `persistState` writes file always; Postgres when `DATABASE_URL` + `pg` available
+- `0009_pipeline_state.sql` — `live_submitted` defaults FALSE
+
+## S2 Feature feeds (2026-09-26)
+
+
+- `fetchSmartMoney`: no key → null; empty Helius → 0; unique fee-payers / 20
+- Removed fake 0.5 token-metadata bonus
+
+## S1 Types/CI (2026-09-26)
+
+
+- Root `test` / `ci` run `scripts/ci-local.cjs` (same gates as GHA)
+- Honest `typecheck` / `build` status scripts (not fake tsc PASS)
+- No frozen lockfile until pnpm-lock exists
+
+## Final audit (2026-09-25)
+
+
+- O1 gate imports `graceful-shutdown.mjs`
+- Web client fetch fail-closed
+- FINAL_AUDIT.md
+
+## Real-module gates + boot wiring (2026-09-25)
+
+
+- AuthEngine imported by `server.mjs`; cycle/funnel/positions require auth
+- Password guard imported and run at API boot
+- auth-gate / password-guard-gate import those modules (no inline copies)
+- `discover-mints.ts` fetch is try/catch fail-closed (matches .mjs)
+- `scripts/gate-import-hygiene.cjs` guards against toy-copy gates
+
+## Paper+live wired, S70 closed (2026-09-25)
+
+
+- CI runs node gates (no frozen lockfile / missing turbo scripts)
+- AuthEngine + RBAC verify
+- Discovery includes `meta.loadedAddresses` (v0 lookup tables)
+- Production rejects placeholder DB passwords
+- `GatedLiveRuntime` submit path exists; default gate closed; no broadcast
+
+## Blocker wiring (2026-09-25)
+
+
+- RPC pool + backup endpoint
+- Jupiter lite quote / optional swap ix / RPC simulate / paper ledger fill
+- packages/config, wallet (pubkey only), services/monitoring
+- paper-soak script (INSUFFICIENT_SAMPLE unless n≥20)
+- Section 70 boxes still unchecked
+
+## Phase audit + discovery tx v1 (2026-09-25)
+
+
+- Pump.fun getTransaction uses maxSupportedTransactionVersion 1
+- Parse inner instructions
+- Phase audit runner + PHASE_AUDIT.md
+- Public RPC 429 treated as UNAVAILABLE
+
+## Discovery pump.fun wiring (2026-09-25)
+
+
+- Added `services/discovery/src/sources/pumpfun-parse.ts`
+- Added `packages/solana/src/metadata/find-metadata-pda.ts`
+- Discover/analyze consume live pump.fun creates or PAPER_MINTS; no invented mints
+
 ## Hostinger VPS topology (2026-09-25)
+
 
 - Removed Replit as the control-plane host
 - Env files: `.env.control-plane` / `.env.trading-runtime` / `.env.vps`
